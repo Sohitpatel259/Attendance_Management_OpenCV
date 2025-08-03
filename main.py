@@ -2,6 +2,8 @@ import cv2
 import os
 import pickle
 import face_recognition
+import numpy as np
+import cvzone
 
 cap=cv2.VideoCapture(0)
 cap.set(3,640)  # Set width
@@ -47,8 +49,19 @@ while True:
         matches = face_recognition.compare_faces(encodelistknown,encodeface)
         facedistance = face_recognition.face_distance(encodelistknown,encodeface)
         # print("matches",matches)
-        print("matches", [bool(match) for match in matches]) #i use this because i want to remove np.true , np.false to ture and false
-        print("facedistance",facedistance)
+        # print("matches", [bool(match) for match in matches]) #i use this because i want to remove np.true , np.false to ture and false
+        # print("facedistance",facedistance)
+
+        matchindex = np.argmin(facedistance)
+        #print("matchindex", matchindex)
+
+        if matches[matchindex]:
+              # print("match found")
+           y1, x2, y2, x1 = faceloc
+           y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
+
+           bbox = (55+x1, 162+y1, x2 - x1, y2 - y1)
+           cvzone.cornerRect(imgBackground,bbox,rt=0)
 
     cv2.imshow("webcam", img)
     cv2.imshow("Face Attendence",imgBackground)
