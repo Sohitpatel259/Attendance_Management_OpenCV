@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 
 # This will fail if the image path is incorrect. Make sure "resources/attendence.png" exists.
-imgBackground = cv2.imread("WhatsApp Image 2025-07-30 at 22.09.50_5096481f.jpg")
+imgBackground = cv2.imread("images/5678.jpeg")
 
 # Check if the image was loaded successfully
 if imgBackground is None:
     print("Error: Could not read the image. Check the file path.")
 else:
     while True:
-        resized = cv2.resize(imgBackground, (444, 666))
+        resized = cv2.resize(imgBackground, (260, 260))
         cv2.imshow("img", resized)
         
         # Corrected: Added a file extension (e.g., .png)

@@ -1,0 +1,17 @@
+# Ignore virtual environment folders
+venv/
+env/
+__pycache__/
+serviceAccountKey.json/
+
+# Ignore Python bytecode
+*.pyc
+
+# Ignore environment variables and secrets
+.env
+*.env
+*serviceAccountKey.json
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db

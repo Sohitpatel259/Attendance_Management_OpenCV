@@ -2,6 +2,8 @@ import cv2
 import face_recognition
 import pickle
 import os
+import firebase_admin
+
 
 # importing images list
 folderpath = "images"
@@ -14,6 +16,11 @@ for path in pathlist:
     studentids.append( os.path.splitext(path)[0]) #remove .jpg from image
     # print(path)
     # print( os.path.splitext(path)[0])
+
+    filename = f'{folderpath}/{path}'
+    bucket = storage.bucket()
+    blob = bucket.blob(filename)
+    blob.upload_from_filename(filename)
 
 print(studentids)
 
