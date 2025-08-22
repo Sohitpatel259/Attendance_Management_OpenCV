@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 
 # This will fail if the image path is incorrect. Make sure "resources/attendence.png" exists.
-imgBackground = cv2.imread("images/5678.jpeg")
+imgBackground = cv2.imread("resources/folders/2.png")
 
 # Check if the image was loaded successfully
 if imgBackground is None:
     print("Error: Could not read the image. Check the file path.")
 else:
     while True:
-        resized = cv2.resize(imgBackground, (260, 260))
+        resized = cv2.resize(imgBackground, (444, 666))
         cv2.imshow("img", resized)
         
         # Corrected: Added a file extension (e.g., .png)

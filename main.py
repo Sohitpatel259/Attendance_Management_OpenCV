@@ -63,6 +63,8 @@ while True:
 
     imgBackground[178:178+480 , 61:61+640] = img
     imgBackground[46:46+666 , 810:810+444] = imgmodellist[modeType]
+    # imgBackground[44:44+633 , 808:808+414] = imgmodellist[0]
+
     
     if facecurrentFrame:
 
@@ -86,7 +88,7 @@ while True:
                 id = studentids[matchindex]
 
                 if counter == 0:
-                    cvzone.putTextRect(imgBackground, "Loading...", (855, 460),  thickness=2)
+                    cvzone.putTextRect(imgBackground, "Loading...", (905, 460),  thickness=2)
                     cv2.imshow("Face Attendance", imgBackground)
                     cv2.waitKey(1)
                     counter=1
@@ -128,17 +130,28 @@ while True:
 
                 if counter <= 10:
 
-                    cv2.putText(imgBackground, str(studentinfo['total_attendance']), (1020, 183), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                    # cv2.putText(imgBackground, str(studentinfo['total_attendance']), (1020, 183), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                    cv2.putText(imgBackground, str(studentinfo['total_attendance']), (863, 129), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
 
-                    (w,h),_ = cv2.getTextSize(studentinfo['name'], cv2.FONT_HERSHEY_COMPLEX, 1, 2)
-                    offset = (200-w)//2
+                    # (w,h),_ = cv2.getTextSize(studentinfo['name'], cv2.FONT_HERSHEY_COMPLEX, 1, 2)
+                    # offset = (200-w)//2
+                    (w,h),_ = cv2.getTextSize(studentinfo['name'], cv2.FONT_HERSHEY_COMPLEX, 1, 1)
+                    offset = (444-w)//2
 
-                    cv2.putText(imgBackground, str(studentinfo['name']), (935+offset, 480), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-                    cv2.putText(imgBackground, str(studentinfo['branch']), (810, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-                    cv2.putText(imgBackground, str(studentinfo['year']), (1060, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-                    cv2.putText(imgBackground, str(studentinfo['last_attendance']), (810, 705), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['name']), (820+offset, 464), cv2.FONT_HERSHEY_COMPLEX, 1, (50,50,50), 1)
+                    # cv2.putText(imgBackground, str(studentinfo['branch']), (810, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['branch']), (1018, 578), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,255,255), 1)
+                    cv2.putText(imgBackground, str(studentinfo['id']), (1018, 518), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255,255,255), 1)
+                    
+
+                    # cv2.putText(imgBackground, str(studentinfo['year']), (1060, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['year']), (913, 658), cv2.FONT_HERSHEY_COMPLEX, 0.6, (100,100,100), 1)
+                    # cv2.putText(imgBackground, str(studentinfo['last_attendance']), (810, 705), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
                     # cv2.putText(imgBackground, str(studentinfo['attendance_history']), (935, 680), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-                    cv2.putText(imgBackground, str(studentinfo['graduate_year']), (810, 80), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    # cv2.putText(imgBackground, str(studentinfo['graduate_year']), (810, 80), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['graduate_year']), (1028,658), cv2.FONT_HERSHEY_COMPLEX, 0.6, (100,100,100), 1)
+                    cv2.putText(imgBackground, str(studentinfo['standing_year']), (1134, 658), cv2.FONT_HERSHEY_COMPLEX, 0.6, (100,100,100), 1)
+
 
                     # imgBackground[162:162+480, 55:55+640] = imgStudent
                 counter += 1
