@@ -1,3 +1,4 @@
+from datetime import datetime
 import cv2
 import os
 import pickle
@@ -62,60 +63,98 @@ while True:
 
     imgBackground[178:178+480 , 61:61+640] = img
     imgBackground[46:46+666 , 810:810+444] = imgmodellist[modeType]
-
-    for encodeface, faceloc in zip(enccodecurrFrame,facecurrentFrame):
-        matches = face_recognition.compare_faces(encodelistknown,encodeface)
-        facedistance = face_recognition.face_distance(encodelistknown,encodeface)
-        # print("matches",matches)
-        # print("matches", [bool(match) for match in matches]) #i use this because i want to remove np.true , np.false to ture and false
-        # print("facedistance",facedistance)
-
-        matchindex = np.argmin(facedistance)
-        #print("matchindex", matchindex)
-
-        if matches[matchindex]:
-              # print("match found")
-           y1, x2, y2, x1 = faceloc
-           y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
-
-           bbox = (55+x1, 162+y1, x2 - x1, y2 - y1)
-           imgBackground=cvzone.cornerRect(imgBackground,bbox,rt=0)
-           id = studentids[matchindex]
-
-           if counter == 0:
-               counter=1
-               modeType = 1 
     
-    if counter!=0:
+    if facecurrentFrame:
 
-        if counter ==1:
-            studentinfo = db.reference(f'Students/{id}').get()
-            print(studentinfo)
+        for encodeface, faceloc in zip(enccodecurrFrame,facecurrentFrame):
+            matches = face_recognition.compare_faces(encodelistknown,encodeface)
+            facedistance = face_recognition.face_distance(encodelistknown,encodeface)
+            # print("matches",matches)
+            # print("matches", [bool(match) for match in matches]) #i use this because i want to remove np.true , np.false to ture and false
+            # print("facedistance",facedistance)
 
-            # blob = bucket.get_blob(f'Images/{id}.png')
-            # array = np.frombuffer(blob.download_as_string(), np.uint8)
-            # imgStudent = cv2.imdecode(array, cv2.COLOR_BGR2RGB)
+            matchindex = np.argmin(facedistance)
+            #print("matchindex", matchindex)
 
-            ref = db.reference(f'Students/{id}/')
-            studentinfo['total_attendance'] += 1
-            ref.child('total_attendance').set(studentinfo['total_attendance'])
+            if matches[matchindex]:
+                # print("match found")
+                y1, x2, y2, x1 = faceloc
+                y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
 
-        cv2.putText(imgBackground, str(studentinfo['total_attendance']), (1020, 183), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                bbox = (55+x1, 162+y1, x2 - x1, y2 - y1)
+                imgBackground=cvzone.cornerRect(imgBackground,bbox,rt=0)
+                id = studentids[matchindex]
 
-        (w,h),_ = cv2.getTextSize(studentinfo['name'], cv2.FONT_HERSHEY_COMPLEX, 1, 2)
-        offset = (200-w)//2
+                if counter == 0:
+                    cvzone.putTextRect(imgBackground, "Loading...", (855, 460),  thickness=2)
+                    cv2.imshow("Face Attendance", imgBackground)
+                    cv2.waitKey(1)
+                    counter=1
+                    modeType = 1 
+        
+        if counter!=0:
 
-        cv2.putText(imgBackground, str(studentinfo['name']), (935+offset, 480), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-        cv2.putText(imgBackground, str(studentinfo['branch']), (810, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-        cv2.putText(imgBackground, str(studentinfo['year']), (1060, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-        cv2.putText(imgBackground, str(studentinfo['last_attendance']), (810, 705), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-        # cv2.putText(imgBackground, str(studentinfo['attendance_history']), (935, 680), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
-        cv2.putText(imgBackground, str(studentinfo['graduate_year']), (810, 80), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+            if counter ==1:
+                studentinfo = db.reference(f'Students/{id}').get()
+                print(studentinfo)
 
-        # imgBackground[162:162+480, 55:55+640] = imgStudent
-        counter += 1
+                # blob = bucket.get_blob(f'Images/{id}.png')
+                # array = np.frombuffer(blob.download_as_string(), np.uint8)
+                # imgStudent = cv2.imdecode(array, cv2.COLOR_BGR2RGB)
+
+                # what time should we choose to update another attendance record?
+
+                datetimeobject = datetime.strptime(studentinfo['last_attendance'], "%Y-%m-%d %H:%M:%S")
+                secondsElapsed = (datetime.now()-datetimeobject).total_seconds()
+                print(secondsElapsed)
+                if secondsElapsed > 30:
+                    ref = db.reference(f'Students/{id}/')
+                    studentinfo['total_attendance'] += 1
+                    ref.child('total_attendance').set(studentinfo['total_attendance'])
+                    ref.child('last_attendance').set(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    # studentinfo['attendance_history'].append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+                else:
+                    modeType = 3
+                    counter = 0
+                    imgBackground[46:46+666 , 810:810+444] = imgmodellist[modeType]
+
+
+
+            if modeType != 3:
+                if 10 < counter < 20:
+                    modeType = 2
+                imgBackground[46:46+666 , 810:810+444] = imgmodellist[modeType]
+
+                if counter <= 10:
+
+                    cv2.putText(imgBackground, str(studentinfo['total_attendance']), (1020, 183), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+
+                    (w,h),_ = cv2.getTextSize(studentinfo['name'], cv2.FONT_HERSHEY_COMPLEX, 1, 2)
+                    offset = (200-w)//2
+
+                    cv2.putText(imgBackground, str(studentinfo['name']), (935+offset, 480), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['branch']), (810, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['year']), (1060, 670), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['last_attendance']), (810, 705), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    # cv2.putText(imgBackground, str(studentinfo['attendance_history']), (935, 680), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+                    cv2.putText(imgBackground, str(studentinfo['graduate_year']), (810, 80), cv2.FONT_HERSHEY_COMPLEX, 1, (75,12,130), 2)
+
+                    # imgBackground[162:162+480, 55:55+640] = imgStudent
+                counter += 1
+
+                if counter >= 20:
+                    counter = 0
+                    modeType = 0
+                    studentinfo = []
+                    imgStudent = []
+                    imgBackground[46:46+666 , 810:810+444] = imgmodellist[modeType]
+
+    else:
+        modeType = 0
+        counter = 0
 
     cv2.imshow("webcam", img)
-    cv2.imshow("Face Attendence",imgBackground)
+    cv2.imshow("Face Attendance",imgBackground)
     cv2.waitKey(1)
 
