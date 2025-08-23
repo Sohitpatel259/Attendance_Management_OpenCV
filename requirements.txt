@@ -7,3 +7,5 @@ pickle
 face_recognition. CV2 (computer vision)
 CMake (for camera)
 Encoding (for encode generation)
+firebase-admin
+gunicorn

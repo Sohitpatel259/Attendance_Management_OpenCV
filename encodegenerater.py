@@ -3,7 +3,16 @@ import face_recognition
 import pickle
 import os
 import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import storage
+from firebase_admin import db
 
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': "https://faceattendancerealtime-93ab5-default-rtdb.firebaseio.com/",
+    # 'storageBucket': "faceattendancerealtime-93ab5.appspot.com"
+    
+})
 
 # importing images list
 folderpath = "images"
@@ -17,10 +26,10 @@ for path in pathlist:
     # print(path)
     # print( os.path.splitext(path)[0])
 
-    filename = f'{folderpath}/{path}'
-    bucket = storage.bucket()
-    blob = bucket.blob(filename)
-    blob.upload_from_filename(filename)
+    # filename = f'{folderpath}/{path}'
+    # bucket = storage.bucket()
+    # blob = bucket.blob(filename)
+    # blob.upload_from_filename(filename)
 
 print(studentids)
 

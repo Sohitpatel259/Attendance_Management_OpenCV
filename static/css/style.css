@@ -1,0 +1,18 @@
+body {
+    background-color: #212529 !important;
+}
+
+.video-container {
+    border: 3px solid #0dcaf0; /* A nice cyan border */
+    background-color: #000;
+    overflow: hidden; /* Ensures the image fits cleanly */
+}
+
+.card {
+    border: 1px solid #495057;
+}
+
+.card-header {
+    background-color: #495057;
+    border-bottom: 1px solid #343a40;
+}

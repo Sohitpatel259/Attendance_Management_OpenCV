@@ -13,7 +13,8 @@ from firebase_admin import storage
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': "https://faceattendancerealtime-93ab5-default-rtdb.firebaseio.com/",
-    'storageBucket': "faceattendancerealtime-93ab5.appspot.com"
+    # 'storageBucket': "faceattendancerealtime-93ab5.appspot.com"
+    
 })
 
 # bucket = storage.bucket()
@@ -153,7 +154,7 @@ while True:
                     cv2.putText(imgBackground, str(studentinfo['standing_year']), (1134, 658), cv2.FONT_HERSHEY_COMPLEX, 0.6, (100,100,100), 1)
 
 
-                    # imgBackground[162:162+480, 55:55+640] = imgStudent
+                    imgBackground[162:162+480, 55:55+640] = imgStudent
                 counter += 1
 
                 if counter >= 20:
