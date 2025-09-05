@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data</title>
+</head>
+<body>
+    <form id="firebaseForm" action="/add_firebase" method="post">
+
+    <style>
+        *{
+            color: rgba(255, 255, 255, 0.849);
+            background-color: rgb(46, 40, 40);
+        }
+    </style>
+    <h1>Upload Data</h1>
+
+<!-- Upload Image Form -->
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" accept=".jpg,.jpeg,.png" required>
+    <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<!-- Upload Student Info Form -->
+<form action="/add_firebase" method="post">
+    <input type="text" name="student_id" placeholder="Student Key (e.g., 0123)" required><br><br>
+    <input type="text" name="name" placeholder="Name" required><br><br>
+    <input type="text" name="branch" placeholder="Branch" required><br><br>
+    <input type="text" name="year" placeholder="Year" required><br><br>
+    <input type="text" name="graduate_year" placeholder="Graduate Year" required><br><br>
+    <input type="number" name="total_attendance" placeholder="Total Attendance" required><br><br>
+    <input type="text" name="last_attendance" placeholder="Last Attendance (YYYY-MM-DD HH:MM:SS)" required><br><br>
+    <input type="text" name="student_unique_id" placeholder="Student ID" required><br><br>
+    <input type="text" name="standing_year" placeholder="Standing Year" required><br><br>
+    <button type="submit">Add to Firebase</button>
+</form>
+
+<div id="status"></div>
+
+   </div>
+</body>
+</html>

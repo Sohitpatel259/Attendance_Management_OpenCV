@@ -9,12 +9,15 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 from firebase_admin import storage
+from dotenv import load_dotenv
+
+load_dotenv()
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': "https://faceattendancerealtime-93ab5-default-rtdb.firebaseio.com/",
-    # 'storageBucket': "faceattendancerealtime-93ab5.appspot.com"
-    
+    'databaseURL': os.getenv('databaseurl'),
+    # 'storageBucket': os.getenv('storagebucket')
+
 })
 
 # bucket = storage.bucket()
@@ -154,7 +157,8 @@ while True:
                     cv2.putText(imgBackground, str(studentinfo['standing_year']), (1134, 658), cv2.FONT_HERSHEY_COMPLEX, 0.6, (100,100,100), 1)
 
 
-                    imgBackground[162:162+480, 55:55+640] = imgStudent
+                    # imgBackground[162:162+480, 55:55+640] = imgStudent
+                    
                 counter += 1
 
                 if counter >= 20:
