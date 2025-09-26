@@ -49,6 +49,7 @@ test/
 tests/
 *test.py
 *_test.py
+main.py/
 
 # Documentation
 README.md
