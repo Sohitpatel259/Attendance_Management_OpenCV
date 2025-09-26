@@ -3,7 +3,16 @@ import cv2
 import os
 import pickle
 import numpy as np
-import face_recognition
+
+# Try to import face_recognition, gracefully handle if not available
+try:
+    import face_recognition
+    FACE_RECOGNITION_AVAILABLE = True
+    print("✅ Face recognition loaded successfully")
+except ImportError:
+    FACE_RECOGNITION_AVAILABLE = False
+    print("⚠️ Face recognition not available - using basic detection only")
+
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, db, storage
@@ -44,10 +53,19 @@ firebase_admin.initialize_app(cred, {
 })
 
 # ---------------- LOAD ENCODINGS ----------------
-print("Loading encode file...")
-with open("EncodeFileFaceRecognition.p", "rb") as file:
-    encodelistknown, studentids = pickle.load(file)
-print("Encodings loaded.")
+if FACE_RECOGNITION_AVAILABLE:
+    print("Loading encode file...")
+    try:
+        with open("EncodeFileFaceRecognition.p", "rb") as file:
+            encodelistknown, studentids = pickle.load(file)
+        print("Encodings loaded.")
+    except FileNotFoundError:
+        print("⚠️ Encoding file not found - face recognition will not work")
+        encodelistknown, studentids = [], []
+        FACE_RECOGNITION_AVAILABLE = False
+else:
+    print("⚠️ Face recognition not available - skipping encoding load")
+    encodelistknown, studentids = [], []
 
 # ---------------- RESOURCES ----------------
 imgBackground = cv2.imread("resources/background.png")
@@ -77,30 +95,44 @@ def generate_frames():
         imgsmall = cv2.resize(img, (0, 0), None, 0.25, 0.25)
         imgsmall = cv2.cvtColor(imgsmall, cv2.COLOR_BGR2RGB)
 
-        facecurrentFrame = face_recognition.face_locations(imgsmall)
-        enccodecurrFrame = face_recognition.face_encodings(imgsmall, facecurrentFrame)
-
         imgBg = imgBackground.copy()
         imgBg[178:178 + 480, 61:61 + 640] = img
         imgBg[46:46 + 666, 810:810 + 444] = imgmodellist[modeType]
 
-        if facecurrentFrame:
-            for encodeface, faceloc in zip(enccodecurrFrame, facecurrentFrame):
-                matches = face_recognition.compare_faces(encodelistknown, encodeface)
-                facedistance = face_recognition.face_distance(encodelistknown, encodeface)
-                matchindex = np.argmin(facedistance)
+        if FACE_RECOGNITION_AVAILABLE:
+            facecurrentFrame = face_recognition.face_locations(imgsmall)
+            enccodecurrFrame = face_recognition.face_encodings(imgsmall, facecurrentFrame)
 
-                if matches[matchindex]:
-                    y1, x2, y2, x1 = faceloc
-                    y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
-                    bbox = (55 + x1, 162 + y1, x2 - x1, y2 - y1)
+            if facecurrentFrame:
+                for encodeface, faceloc in zip(enccodecurrFrame, facecurrentFrame):
+                    matches = face_recognition.compare_faces(encodelistknown, encodeface)
+                    facedistance = face_recognition.face_distance(encodelistknown, encodeface)
+                    matchindex = np.argmin(facedistance)
+
+                    if matches[matchindex]:
+                        y1, x2, y2, x1 = faceloc
+                        y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
+                        bbox = (55 + x1, 162 + y1, x2 - x1, y2 - y1)
+                        imgBg = cornerRect(imgBg, bbox, rt=0)
+                        id = studentids[matchindex]
+
+                        if counter == 0:
+                            putTextRect(imgBg, "Loading...", (905, 460), thickness=2)
+                            counter = 1
+                            modeType = 1
+        else:
+            # Basic face detection using OpenCV Haar cascades as fallback
+            face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+            gray = cv2.cvtColor(imgsmall, cv2.COLOR_RGB2GRAY)
+            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+            
+            if len(faces) > 0:
+                for (x, y, w, h) in faces:
+                    # Scale back to original size
+                    x, y, w, h = x * 4, y * 4, w * 4, h * 4
+                    bbox = (55 + x, 162 + y, w, h)
                     imgBg = cornerRect(imgBg, bbox, rt=0)
-                    id = studentids[matchindex]
-
-                    if counter == 0:
-                        putTextRect(imgBg, "Loading...", (905, 460), thickness=2)
-                        counter = 1
-                        modeType = 1
+                    putTextRect(imgBg, "Face Detected (No Recognition)", (905, 460), thickness=2)
 
         if counter != 0:
             if counter == 1:
