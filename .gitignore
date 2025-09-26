@@ -1,5 +1,5 @@
 # Ignore virtual environment folders
-venv/
+new_venv/
 env/
 __pycache__/
 serviceAccountKey.json/
