@@ -68,15 +68,30 @@ else:
     encodelistknown, studentids = [], []
 
 # ---------------- RESOURCES ----------------
-imgBackground = cv2.imread("resources/background.png")
-foldermodepath = "resources/folders"
-modepathlist = os.listdir(foldermodepath)
-imgmodellist = [cv2.imread(os.path.join(foldermodepath, path)) for path in modepathlist]
+try:
+    imgBackground = cv2.imread("resources/background.png")
+    foldermodepath = "resources/folders"
+    if os.path.exists(foldermodepath):
+        modepathlist = os.listdir(foldermodepath)
+        imgmodellist = [cv2.imread(os.path.join(foldermodepath, path)) for path in modepathlist]
+    else:
+        print("⚠️ Resources folder not found - creating dummy background")
+        imgBackground = np.zeros((720, 1280, 3), dtype=np.uint8)
+        imgmodellist = [np.zeros((666, 444, 3), dtype=np.uint8) for _ in range(4)]
+except Exception as e:
+    print(f"⚠️ Error loading resources: {e}")
+    imgBackground = np.zeros((720, 1280, 3), dtype=np.uint8)
+    imgmodellist = [np.zeros((666, 444, 3), dtype=np.uint8) for _ in range(4)]
 
 # ---------------- CAMERA ----------------
-cap = cv2.VideoCapture(0)
-cap.set(3, 640)
-cap.set(4, 480)
+try:
+    cap = cv2.VideoCapture(0)
+    cap.set(3, 640)
+    cap.set(4, 480)
+    print("✅ Camera initialized")
+except Exception as e:
+    print(f"⚠️ Camera initialization failed: {e}")
+    cap = None
 
 modeType = 0
 counter = 0
