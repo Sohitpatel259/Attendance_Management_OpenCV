@@ -4,11 +4,32 @@ import os
 import pickle
 import numpy as np
 import face_recognition
-import cvzone
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, db, storage
 from dotenv import load_dotenv
+
+# Simple replacements for cvzone functions
+def cornerRect(img, bbox, rt=1, colorR=(255, 0, 255), colorC=(0, 255, 0), thickness=2):
+    x, y, w, h = bbox
+    x1, y1 = x + w, y + h
+    
+    # Draw corner rectangles
+    cv2.rectangle(img, (x, y), (x + rt, y + rt), colorR, cv2.FILLED)
+    cv2.rectangle(img, (x1 - rt, y), (x1, y + rt), colorR, cv2.FILLED)
+    cv2.rectangle(img, (x, y1 - rt), (x + rt, y1), colorR, cv2.FILLED)
+    cv2.rectangle(img, (x1 - rt, y1 - rt), (x1, y1), colorR, cv2.FILLED)
+    
+    # Draw rectangle
+    cv2.rectangle(img, (x, y), (x1, y1), colorC, thickness)
+    return img
+
+def putTextRect(img, text, pos, scale=1, thickness=1, colorT=(255, 255, 255), colorR=(255, 0, 255), offset=10):
+    x, y = pos
+    (w, h), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, scale, thickness)
+    cv2.rectangle(img, (x - offset, y - h - offset), (x + w + offset, y + offset), colorR, cv2.FILLED)
+    cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, scale, colorT, thickness)
+    return img
 
 load_dotenv()
 
@@ -73,11 +94,11 @@ def generate_frames():
                     y1, x2, y2, x1 = faceloc
                     y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
                     bbox = (55 + x1, 162 + y1, x2 - x1, y2 - y1)
-                    imgBg = cvzone.cornerRect(imgBg, bbox, rt=0)
+                    imgBg = cornerRect(imgBg, bbox, rt=0)
                     id = studentids[matchindex]
 
                     if counter == 0:
-                        cvzone.putTextRect(imgBg, "Loading...", (905, 460), thickness=2)
+                        putTextRect(imgBg, "Loading...", (905, 460), thickness=2)
                         counter = 1
                         modeType = 1
 
