@@ -231,7 +231,7 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
-@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html')
 
@@ -525,6 +525,29 @@ def submit():
 @app.route('/logout')
 def logout():
     return render_template("login.html")
+
+@app.route('/')
+def index_log():
+    return render_template('index_login.html')
+
+@app.route("/submit_l",methods =["POST"])
+def submit_l():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    # if username =="sohitpatel359" and password=="password":
+    #     return render_template("welcome.html",name = username)
+
+    validuser={
+        'admin': '123',
+        'preetiRai': 'preeti123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("index.html",name = username)
+    
+    else:
+        return render_template("index_log_fail.html")
 
     
 

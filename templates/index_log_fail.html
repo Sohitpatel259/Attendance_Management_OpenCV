@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Failed</title>
+</head>
+<body>
+    <style>
+       body {
+            background-image: url("{{ url_for('static', filename='img/invalid.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(17, 18, 19, 0.95);
+            font-family: Arial, sans-serif;
+            
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 154px;
+            margin: 104px auto;
+            
+
+
+        }
+    </style>
+    <h1 >Invalid Credentials! </h1>
+    <h2>Please Enter Valid UserId and Password</h2>
+    <button style="color: black;  width: 80px;text-align: center;padding: 10px; margin:10px;background-color: rgba(255, 0, 0, 0.642);" ><a href="{{ url_for('index_log') }}" style="color: black;">Try Again</a></button>
+    
+</body>
+</html>
