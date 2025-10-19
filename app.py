@@ -8,10 +8,33 @@ import numpy as np
 try:
     import face_recognition
     FACE_RECOGNITION_AVAILABLE = True
-    print("✅ Face recognition loaded successfully")
+    # Some consoles can't encode emoji — use a safe print helper below
+    
+    def safe_print(msg):
+        try:
+            print(msg)
+        except UnicodeEncodeError:
+            # Fallback: remove non-ascii characters
+            try:
+                print(msg.encode('ascii', 'ignore').decode('ascii'))
+            except Exception:
+                # Last resort
+                print(str(msg))
+
+    safe_print("✅ Face recognition loaded successfully")
 except ImportError:
     FACE_RECOGNITION_AVAILABLE = False
-    print("⚠️ Face recognition not available - using basic detection only")
+    # ensure helper exists in the import-failure path
+    def safe_print(msg):
+        try:
+            print(msg)
+        except UnicodeEncodeError:
+            try:
+                print(msg.encode('ascii', 'ignore').decode('ascii'))
+            except Exception:
+                print(str(msg))
+
+    safe_print("⚠️ Face recognition not available - using basic detection only")
 
 from datetime import datetime
 import firebase_admin
@@ -54,17 +77,17 @@ firebase_admin.initialize_app(cred, {
 
 # ---------------- LOAD ENCODINGS ----------------
 if FACE_RECOGNITION_AVAILABLE:
-    print("Loading encode file...")
+    safe_print("Loading encode file...")
     try:
         with open("EncodeFileFaceRecognition.p", "rb") as file:
             encodelistknown, studentids = pickle.load(file)
-        print("Encodings loaded.")
+        safe_print("Encodings loaded.")
     except FileNotFoundError:
-        print("⚠️ Encoding file not found - face recognition will not work")
+        safe_print("⚠️ Encoding file not found - face recognition will not work")
         encodelistknown, studentids = [], []
         FACE_RECOGNITION_AVAILABLE = False
 else:
-    print("⚠️ Face recognition not available - skipping encoding load")
+    safe_print("⚠️ Face recognition not available - skipping encoding load")
     encodelistknown, studentids = [], []
 
 # ---------------- RESOURCES ----------------
@@ -75,11 +98,11 @@ try:
         modepathlist = os.listdir(foldermodepath)
         imgmodellist = [cv2.imread(os.path.join(foldermodepath, path)) for path in modepathlist]
     else:
-        print("⚠️ Resources folder not found - creating dummy background")
+        safe_print("⚠️ Resources folder not found - creating dummy background")
         imgBackground = np.zeros((720, 1280, 3), dtype=np.uint8)
         imgmodellist = [np.zeros((666, 444, 3), dtype=np.uint8) for _ in range(4)]
 except Exception as e:
-    print(f"⚠️ Error loading resources: {e}")
+    safe_print(f"⚠️ Error loading resources: {e}")
     imgBackground = np.zeros((720, 1280, 3), dtype=np.uint8)
     imgmodellist = [np.zeros((666, 444, 3), dtype=np.uint8) for _ in range(4)]
 
@@ -88,9 +111,9 @@ try:
     cap = cv2.VideoCapture(0)
     cap.set(3, 640)
     cap.set(4, 480)
-    print("✅ Camera initialized")
+    safe_print("✅ Camera initialized")
 except Exception as e:
-    print(f"⚠️ Camera initialization failed: {e}")
+    safe_print(f"⚠️ Camera initialization failed: {e}")
     cap = None
 
 modeType = 0
@@ -248,9 +271,113 @@ def upload_data_page():
     return render_template('upload_data.html')
 
 
+@app.route('/student', methods=['GET', 'POST'])
+def student_attendance():
+    """Show a simple form where a student can enter their database key
+    and see their attendance and (optionally) percentage when total
+    number of classes is provided.
+    """
+    student = None
+    percentage = None
+    error = None
+
+    if request.method == 'POST':
+        key = request.form.get('student_key')
+        total_classes_str = request.form.get('total_classes')
+
+        if not key:
+            error = 'Student key or official ID is required.'
+            return render_template('student_attendance.html', error=error)
+
+        try:
+            # First try lookup by database key
+            safe_print(f"Student lookup requested for input: '{key}'")
+            student_ref = db.reference(f'Students/{key}')
+            student = student_ref.get()
+
+            # If not found, try searching by the official student 'id' field
+            if not student:
+                safe_print(f"No student at DB key '{key}', trying id lookup...")
+                students_ref = db.reference('Students')
+                normalized = key.strip()
+                # Try exact query by child 'id'
+                try:
+                    query_result = students_ref.order_by_child('id').equal_to(normalized).get()
+                except Exception as e:
+                    query_result = None
+                    safe_print(f"Warning: order_by_child query failed: {e}")
+
+                if query_result:
+                    # take the first matched student
+                    first_key = next(iter(query_result))
+                    student = query_result[first_key]
+                    safe_print(f"Found student by id query under DB key '{first_key}'")
+                else:
+                    # Fallback: scan all students and compare normalized fields (case-insensitive)
+                    try:
+                        all_students = students_ref.get() or {}
+                        found = None
+                        lookup = normalized.lower()
+                        for k, s in (all_students.items() if isinstance(all_students, dict) else []):
+                            # check both 'id' and possibly 'student_unique_id' if present
+                            sid = str(s.get('id', '')).strip().lower()
+                            suid = str(s.get('student_unique_id', '')).strip().lower() if s.get('student_unique_id') else ''
+                            if sid == lookup or suid == lookup:
+                                found = s
+                                break
+
+                        if found:
+                            student = found
+                            safe_print("Found student by scanning all_students fallback")
+                        else:
+                            # Try matching ignoring leading zeros in stored id
+                            lookup_nz = lookup.lstrip('0')
+                            for k, s in (all_students.items() if isinstance(all_students, dict) else []):
+                                sid = str(s.get('id', '')).strip().lower().lstrip('0')
+                                if sid == lookup_nz:
+                                    student = s
+                                    break
+
+                    except Exception as e:
+                        safe_print(f"Error scanning students for fallback lookup: {e}")
+
+                    if not student:
+                        error = f'No student found for key or ID: {key}'
+                        return render_template('student_attendance.html', error=error)
+
+            # Ensure numeric attendance
+            try:
+                total_att = int(student.get('total_attendance', 0))
+            except Exception:
+                total_att = 0
+
+            # Compute percentage if total_classes provided and > 0
+            if total_classes_str:
+                try:
+                    total_classes = int(total_classes_str)
+                    if total_classes > 0:
+                        percentage = (total_att / total_classes) * 100
+                    else:
+                        percentage = None
+                except ValueError:
+                    percentage = None
+
+            # Attach numeric values to template-friendly object
+            student['total_attendance'] = total_att
+
+        except Exception as e:
+            error = f'Error reading database: {e}'
+
+    return render_template('student_attendance.html', student=student, percentage=percentage, error=error)
+
+
 @app.route('/add_firebase', methods=['POST'])
 def add_firebase():
-    student_id = request.form['student_id']
+    try:
+        student_id = request.form['student_id']
+    except Exception as e:
+        safe_print(f"add_firebase: missing student_id in form: {e}")
+        return "Missing student_id", 400
     data = {
         "name": request.form['name'],
         "branch": request.form['branch'],
@@ -262,10 +389,15 @@ def add_firebase():
         "standing_year": request.form['standing_year']
     }
 
-    ref = db.reference("Students")
-    ref.child(student_id).set(data)
-
-    return "Data Uploaded Successfully!"
+    try:
+        safe_print(f"add_firebase: adding student at key '{student_id}' with data: {data}")
+        ref = db.reference("Students")
+        ref.child(student_id).set(data)
+        safe_print("add_firebase: write succeeded")
+        return "Data Uploaded Successfully!"
+    except Exception as e:
+        safe_print(f"add_firebase: write error: {e}")
+        return f"Error writing to database: {e}", 500
 
 def update_encodings():
     import cv2, face_recognition, pickle, os
@@ -288,7 +420,7 @@ def update_encodings():
     with open("EncodeFileFaceRecognition.p", 'wb') as file:
         pickle.dump(encodelistknownIds, file)
 
-    print("✅ Encodings updated successfully.")
+    safe_print("✅ Encodings updated successfully.")
 
 
 if __name__ == "__main__":
