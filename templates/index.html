@@ -12,8 +12,28 @@
 </head>
 <body class="bg-dark text-light">
     <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+       <style>
+        body {
+            background-image: url("{{ url_for('static', filename='img/indexback.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(255, 255, 255, 0.95);
+            font-family: Arial, sans-serif;
+        }
+        /* semi-opaque content wrapper to improve readability */
+        .content {
+            background: rgba(0, 0, 0, 0.24);
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+      
+    </style>
+
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><h2>Smart Attendance</h2></a>
+    <a class="navbar-brand" href="#"><h2 style="color: black;">Smart Attendance</h2></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -27,17 +47,11 @@
           <a class="nav-link" href="{{ url_for('upload_data_page') }}"><h4>Upload Data</h4></a>
 
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><h4>Activity</h4></a>
-        </li><br><br><br>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('student_attendance') }}"><h4>Student Attendance</h4></a>
-        </li>
        
-        <li><form class="d-flex">
-      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form></li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student_attendance') }}"><h4>Check Attendance</h4></a>
+        </li>
+      
       </ul>
     </div>
   </div>
@@ -45,7 +59,7 @@
 
 
     <div class="container-fluid mt-4">
-        <h1 class="text-center mb-4 border-bottom pb-2">Real-Time Face Recognition Attendance</h1>
+        <h1 class="text-center mb-4 border-bottom pb-2" style="background-color: #495057;" >Real-Time Face Recognition Attendance</h1>
         
         <div class="row">
             <div class="col-lg-9">
@@ -81,8 +95,8 @@
 
   <div class="footer">
     <div class="container text-center py-3">
-      <a class="text-light me-3" href="{{ url_for('upload_data_page') }}">Upload Data</a>
-      <a class="text-light" href="{{ url_for('student_attendance') }}">Student Attendance</a>
+      <a class="text-light me-3" href="{{ url_for('upload_data_page') }}" style="background-color: #495057;">Upload Data</a>
+      <a class="text-light" href="{{ url_for('student_attendance') }}"style="background-color: #495057;">Check Attendance</a>
     </div>
   </div>
 

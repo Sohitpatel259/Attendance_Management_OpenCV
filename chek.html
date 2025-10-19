@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+</head>
+<body class="bg-dark text-light">
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+       <style>
+        body {
+            background-image: url("{{ url_for('static', filename='img/indexback.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(255, 255, 255, 0.95);
+            font-family: Arial, sans-serif;
+        }
+        /* semi-opaque content wrapper to improve readability */
+        .content {
+            background: rgba(0, 0, 0, 0.24);
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+      
+    </style>
+
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><h2 style="color: black;">Smart Attendance</h2></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#"><h4>Home</h4></a>
+        </li>
+        <li class="nav-item">
+          
+          <a class="nav-link" href="{{ url_for('upload_data_page') }}"><h4>Upload Data</h4></a>
+
+        </li>
+       
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student_attendance') }}"><h4>Check Attendance</h4></a>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+    <div class="container-fluid mt-4">
+        <h1 class="text-center mb-4 border-bottom pb-2" style="background-color: #495057;" >Real-Time Face Recognition Attendance</h1>
+        
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="video-container shadow rounded">
+                    <img src="{{ url_for('video_feed') }}" alt="Video Stream" width="100%">
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="card bg-secondary text-light h-100 shadow">
+                    <div class="card-header">
+                        <h2>System Status</h2>
+                    </div>
+                    <div class="card-body">
+                        <p><span class="badge bg-success">LIVE</span> The system is actively scanning for faces.</p>
+                        <hr>
+                        <h5>Instructions</h5>
+                        <ul class="list-unstyled">
+                            <li>✔️ Ensure good lighting conditions.</li>
+                            <li>✔️ Position your face within the camera frame.</li>
+                            <li>✔️ Hold still for a moment to be recognized.</li>
+                            <li>✔️ The system will mark your attendance automatically.</li>
+                        </ul>
+                        <hr>
+                        <div class="alert alert-dark" role="alert">
+                            All information is displayed directly on the video feed.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="footer">
+    <div class="container text-center py-3">
+      <a class="text-light me-3" href="{{ url_for('upload_data_page') }}" style="background-color: #495057; height: 40px; width: 80px;">Upload Data</a>
+      <a class="text-light" href="{{ url_for('student_attendance') }}"style="background-color: #495057;height: 40px; width: 80px;">Check Attendance</a>
+    </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>

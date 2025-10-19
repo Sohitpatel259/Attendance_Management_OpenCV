@@ -6,26 +6,46 @@
     <title>Upload Data</title>
 </head>
 <body>
-    
     <style>
-        *{
-            color: rgba(255, 255, 255, 0.849);
-            background-color: rgb(46, 40, 40);
+        html, body { height: 100%; margin: 0; }
+        body {
+            background-image: url("{{ url_for('static', filename='img/backgrounddata.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(255, 255, 255, 0.95);
+            font-family: Arial, sans-serif;
         }
+        /* semi-opaque content wrapper to improve readability */
+        .content {
+            background: rgba(0,0,0,0.5);
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+        label, input, button { display:block; width:100%; }
+        input, button { padding:8px; margin-top:8px; }
     </style>
+    <div class="content">
     <h1>Upload Data</h1>
 
-<!-- Upload Image Form -->
-<form action="/upload" method="post" enctype="multipart/form-data">
+    <!-- Upload Image Form -->
+    <form action="/upload" method="post" enctype="multipart/form-data">
     <input type="file" name="image" accept=".jpg,.jpeg,.png" required>
-    <button type="submit">Upload</button>
-</form>
+    <br><br>
+    <label>Student Key </label>
+    <input type="text" name="student_key" placeholder="e.g. 133">
+        <button type="submit">Upload</button>
+    </form>
 
 <hr>
 
 <!-- Upload Student Info Form -->
-<form action="/add_firebase" method="post">
+<form action="/add_firebase" method="post" enctype="multipart/form-data">
     <input type="text" name="student_id" placeholder="Student Key (e.g., 0123)" required><br><br>
+    <label>Student Image (face photo)</label><br>
+    <input type="file" name="image" accept=".jpg,.jpeg,.png"><br><br>
     <input type="text" name="name" placeholder="Name" required><br><br>
     <input type="text" name="branch" placeholder="Branch" required><br><br>
     <input type="text" name="year" placeholder="Year" required><br><br>
@@ -38,5 +58,6 @@
 </form>
 
 <div id="status"></div>
+</div>
 </body>
 </html>

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Response, request, redirect, url_for
+from werkzeug.utils import secure_filename
 import cv2
 import os
 import pickle
@@ -250,16 +251,64 @@ def upload():
     if file.filename == '':
         return "No file selected", 400
 
-    filename = os.path.join("images", file.filename)
-    file.save(filename)
+    # Ensure images directory exists
+    images_dir = os.path.join(os.getcwd(), 'images')
+    os.makedirs(images_dir, exist_ok=True)
 
-    # Upload to Firebase Storage
-    bucket = storage.bucket()
-    blob = bucket.blob(f"images/{file.filename}")
-    blob.upload_from_filename(filename)
+    original_name = secure_filename(file.filename)
+    # default save name is original, but allow renaming by student_key
+    requested_key = request.form.get('student_key') or request.args.get('student_key')
+    if requested_key:
+        # normalize key to safe filename (no path separators)
+        key_safe = secure_filename(requested_key)
+        _, ext = os.path.splitext(original_name)
+        if not ext:
+            ext = '.jpg'
+        target_name = f"{key_safe}{ext}"
+    else:
+        target_name = original_name
 
-    # 🔄 Update encodings
-    update_encodings()
+    save_path = os.path.join(images_dir, target_name)
+    try:
+        file.save(save_path)
+        safe_print(f"upload: saved file to {save_path}")
+    except Exception as e:
+        safe_print(f"upload: error saving file: {e}")
+        return f"Error saving file: {e}", 500
+
+    # Try upload to Firebase Storage (optional) only if bucket configured
+    try:
+        bucket_name = None
+        try:
+            # check app config first
+            bucket_name = firebase_admin.get_app().options.get('storageBucket')
+        except Exception:
+            bucket_name = None
+
+        # fallback to env var
+        if not bucket_name:
+            bucket_name = os.getenv('storagebucket') or os.getenv('STORAGE_BUCKET')
+
+        if bucket_name:
+            try:
+                # prefer passing explicit bucket name
+                bucket = storage.bucket(bucket_name)
+                blob = bucket.blob(f"images/{target_name}")
+                blob.upload_from_filename(save_path)
+                safe_print(f"upload: uploaded to firebase storage images/{target_name}")
+            except Exception as e:
+                safe_print(f"upload: firebase storage upload failed: {e}")
+        else:
+            safe_print("upload: no firebase storage bucket configured; skipping cloud upload")
+    except Exception as e:
+        safe_print(f"upload: storage check failed: {e}")
+
+    # 🔄 Update encodings (rebuild encoding file)
+    try:
+        update_encodings()
+        safe_print("upload: encodings updated")
+    except Exception as e:
+        safe_print(f"upload: update_encodings failed: {e}")
 
     return redirect(url_for('upload_data_page'))
 
@@ -393,7 +442,31 @@ def add_firebase():
         safe_print(f"add_firebase: adding student at key '{student_id}' with data: {data}")
         ref = db.reference("Students")
         ref.child(student_id).set(data)
+        # Save uploaded image (if provided) into images/<student_id>.<ext>
+        try:
+            uploaded = request.files.get('image')
+            if uploaded and uploaded.filename:
+                images_dir = os.path.join(os.getcwd(), 'images')
+                os.makedirs(images_dir, exist_ok=True)
+                _, ext = os.path.splitext(uploaded.filename)
+                ext = ext.lower() if ext else '.jpg'
+                save_path = os.path.join(images_dir, f"{student_id}{ext}")
+                uploaded.save(save_path)
+                safe_print(f"add_firebase: saved uploaded image to {save_path}")
+            else:
+                safe_print("add_firebase: no image uploaded or filename empty")
+        except Exception as e:
+            safe_print(f"add_firebase: error saving uploaded image: {e}")
+
         safe_print("add_firebase: write succeeded")
+
+        # Re-generate encodings (this will overwrite EncodeFileFaceRecognition.p)
+        try:
+            update_encodings()
+            safe_print("add_firebase: encodings updated")
+        except Exception as e:
+            safe_print(f"add_firebase: error updating encodings: {e}")
+
         return "Data Uploaded Successfully!"
     except Exception as e:
         safe_print(f"add_firebase: write error: {e}")

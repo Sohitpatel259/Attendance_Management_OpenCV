@@ -8,10 +8,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body { background-color: #2d2a2aff; color: #fff; }
-        .card { background: #af9e9eff; }
+        .card { background: #7d7575ff; }
     </style>
 </head>
 <body>
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='img/studchek.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(255, 255, 255, 0.95);
+            font-family: Arial, sans-serif;
+        }
+        /* semi-opaque content wrapper to improve readability */
+        .content {
+            background: rgba(0, 0, 0, 0.24);
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+      
+    </style>
 <div class="container py-5">
     <h1 class="mb-4">Check Your Attendance</h1>
 
@@ -22,11 +41,11 @@
                     <div class="mb-3">
                         <label class="form-label">Student Key or Official Student ID</label>
                         <input name="student_key" class="form-control" placeholder="e.g. 133 or 0206AL231133" required>
-                        <div class="form-text">You can enter the DB key (e.g. 133) or the official student ID (e.g. 0206AL231133).</div>
+                        <div class="form-text">Enter Student key (e.g. 133) or  student ID (e.g. 0206AL231133).</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Total Classes (optional)</label>
-                        <input name="total_classes" type="number" class="form-control" placeholder="e.g. 40">
+                        <input name="total_classes" type="number" class="form-control" placeholder="Fill 70">
                         <div class="form-text">Provide total classes to compute percentage. If left empty, only raw attendance will be shown.</div>
                     </div>
                     <button class="btn btn-primary" type="submit">Check</button>
@@ -40,7 +59,7 @@
                 <h3>{{ student.name }}</h3>
                 <p><strong>ID:</strong> {{ student.id }}</p>
                 <p><strong>Branch:</strong> {{ student.branch }}</p>
-                <p><strong>Year:</strong> {{ student.year }}</p>
+                <p><strong>Semester:</strong> {{ student.year }}</p>
                 <p><strong>Total attendance:</strong> {{ student.total_attendance }}</p>
                 <p><strong>Last attendance:</strong> {{ student.last_attendance }}</p>
                 {% if percentage is defined and percentage is not none %}
