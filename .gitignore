@@ -7,7 +7,6 @@ serviceAccountKey.json
 
 # Ignore Python bytecode
 *.pyc
-
 # Ignore environment variables and secrets
 .env
 *.env

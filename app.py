@@ -317,7 +317,7 @@ def upload():
 # ---------------- UPLOAD DATA FORM ----------------
 @app.route('/upload_data')
 def upload_data_page():
-    return render_template('upload_data.html')
+    return render_template('login.html')
 
 
 @app.route('/student', methods=['GET', 'POST'])
@@ -494,6 +494,39 @@ def update_encodings():
         pickle.dump(encodelistknownIds, file)
 
     safe_print("✅ Encodings updated successfully.")
+
+from flask import Flask , request,redirect , url_for , session, Response , render_template
+
+@app.route('/login')
+def login():
+    return render_template("login.html")
+
+@app.route("/submit",methods =["POST"])
+def submit():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    # if username =="sohitpatel359" and password=="password":
+    #     return render_template("welcome.html",name = username)
+
+    validuser={
+        'admin': '123',
+        'preetiRai': 'preeti123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("upload_data.html",name = username)
+    
+    else:
+        return render_template("login_failed.html")
+    
+# logout
+
+@app.route('/logout')
+def logout():
+    return render_template("login.html")
+
+    
 
 
 if __name__ == "__main__":

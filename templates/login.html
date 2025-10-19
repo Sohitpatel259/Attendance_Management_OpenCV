@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+</head>
+<body>
+    
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='img/login.png') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: rgba(161, 167, 171, 0.95);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            height: 100vh;
+
+
+        }
+        /* semi-opaque content wrapper to improve readability */
+        .content {
+            background: rgba(239, 232, 232, 0.43);
+            padding: 84px;
+            margin: 74px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+    </style>
+    <h1>Admin Login</h1>
+    
+    <form method="POST" action="/submit" style="height: 40vh;">
+        
+        
+        <div class="na"><label >Admin Username</label></div>
+        <div class="na"><input type="text" name="username" placeholder="enter username"><br><br>
+       </div>
+        <div class="na"><label >Password</label></div>
+        <div class="na"><input type="text" name="password" placeholder="enter password"><br><br>
+
+        </div> 
+        <input type="submit" value="login">
+    
+    </form>
+</body>
+</html>
