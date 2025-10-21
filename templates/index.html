@@ -33,28 +33,9 @@
     </style>
 
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><h2 style="color: black;">Smart Attendance</h2></a>
+    <a class="navbar-brand" href="{{ url_for('index') }}"><h2 style="color: black;">Smart Attendance</h2></a>
     
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{url_for('index')}}"><h4>Home</h4></a>
-        </li>
-        <li class="nav-item">
-          
-          <a class="nav-link" href="{{ url_for('upload_data_page') }}"><h4>Upload Data</h4></a>
-
-        </li>
-       
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('student_attendance') }}"><h4>Check Attendance</h4></a>
-        </li>
-      
-      </ul>
-    </div>
+    
     
     <button style="color: black;  width: 80px;text-align: center;padding: 10px; margin:10px;background-color: rgba(255, 0, 0, 0.642);" ><a href="{{ url_for('index_log') }}" style="color: black;">Logout</a></button>
   </div>

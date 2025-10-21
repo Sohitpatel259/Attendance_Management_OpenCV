@@ -3,19 +3,22 @@ new_venv/
 env/
 __pycache__/
 serviceAccountKey.json
-
+.vscode/
+.vscode
+*.vscode
 
 # Ignore Python bytecode
 *.pyc
 # Ignore environment variables and secrets
 .env
 *.env
+base.py
+
 # service account key (already listed above)
 # Ignore local/test files
 test.py
 tempCodeRunnerFile.py
-resizeimg.py
-main.py
+
 
 # Ignore OS-specific files
 .DS_Store
