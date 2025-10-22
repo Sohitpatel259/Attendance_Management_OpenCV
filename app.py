@@ -38,8 +38,6 @@ except ImportError:
     safe_print("⚠️ Face recognition not available - using basic detection only")
 
 from datetime import datetime
-from flask import session
-from auth_utils import configure_app, verify, is_blocked, record_attempt, reset_attempts
 import firebase_admin
 from firebase_admin import credentials, db, storage
 from dotenv import load_dotenv
@@ -70,7 +68,6 @@ load_dotenv()
 
 # ---------------- INIT FLASK ----------------
 app = Flask(__name__)
-configure_app(app)
 
 # ---------------- INIT FIREBASE ----------------
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -312,7 +309,6 @@ def upload():
         safe_print(f"upload: storage check failed: {e}")
 
     # 🔄 Update encodings (rebuild encoding file)
-    # trigger encoding rebuild in foreground for now (can be backgrounded later)
     try:
         update_encodings()
         safe_print("upload: encodings updated")
@@ -514,27 +510,25 @@ def login():
 def submit():
     username = request.form.get("username")
     password = request.form.get("password")
-    # Use auth_utils (mapping style preserved but stored hashed)
-    client_ip = request.remote_addr
-    role = 'admin'
-    if is_blocked(role, username, client_ip):
-        safe_print(f"login blocked for {username} from {client_ip}")
-        return render_template("login_failed.html")
 
-    if verify(role, username, password):
-        reset_attempts(role, username, client_ip)
-        session['role'] = role
-        session['username'] = username
-        return render_template("upload_data.html", name=username)
+    # if username =="sohitpatel359" and password=="password":
+    #     return render_template("welcome.html",name = username)
+
+    validuser={
+        'admin': '123',
+        'preetiRai': 'preeti123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("upload_data.html",name = username)
+    
     else:
-        record_attempt(role, username, client_ip)
         return render_template("login_failed.html")
     
 # logout
 
 @app.route('/logout')
 def logout():
-    session.clear()
     return render_template("login.html")
 
 @app.route('/index_log')
@@ -549,19 +543,15 @@ def submit_l():
     # if username =="sohitpatel359" and password=="password":
     #     return render_template("welcome.html",name = username)
 
-    client_ip = request.remote_addr
-    role = 'faculty'
-    if is_blocked(role, username, client_ip):
-        safe_print(f"faculty login blocked for {username} from {client_ip}")
-        return render_template("index_log_fail.html")
-
-    if verify(role, username, password):
-        reset_attempts(role, username, client_ip)
-        session['role'] = role
-        session['username'] = username
-        return render_template("index.html", name=username)
+    validuser={
+        'faculty': '123',
+        'preetiRai': 'preeti123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("index.html",name = username)
+    
     else:
-        record_attempt(role, username, client_ip)
         return render_template("index_log_fail.html")
 
 @app.route("/")
@@ -580,19 +570,14 @@ def submit_s():
     # if username =="sohitpatel359" and password=="password":
     #     return render_template("welcome.html",name = username)
 
-    client_ip = request.remote_addr
-    role = 'student'
-    if is_blocked(role, username, client_ip):
-        safe_print(f"student login blocked for {username} from {client_ip}")
-        return render_template("stu_log_fail.html")
-
-    if verify(role, username, password):
-        reset_attempts(role, username, client_ip)
-        session['role'] = role
-        session['username'] = username
-        return render_template("student_attendance.html", name=username)
+    validuser={
+        'student': '123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("student_attendance.html",name = username)
+    
     else:
-        record_attempt(role, username, client_ip)
         return render_template("stu_log_fail.html")
 
 
