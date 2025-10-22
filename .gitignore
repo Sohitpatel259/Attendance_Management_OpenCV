@@ -13,7 +13,7 @@ serviceAccountKey.json
 .env
 *.env
 base.py
-
+auth_utils.py
 # service account key (already listed above)
 # Ignore local/test files
 test.py
