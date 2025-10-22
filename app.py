@@ -176,6 +176,11 @@ def generate_frames():
         if counter != 0:
             if counter == 1:
                 studentinfo = db.reference(f'Students/{id}').get()
+                # blob = bucket.get_blob(f'Images/{id}.png')
+                # array = np.frombuffer(blob.download_as_string(), np.uint8)
+                # imgStudent = cv2.imdecode(array, cv2.COLOR_BGR2RGB)
+
+                # what time should we choose to update another attendance record?
 
                 datetimeobject = datetime.strptime(studentinfo['last_attendance'], "%Y-%m-%d %H:%M:%S")
                 secondsElapsed = (datetime.now() - datetimeobject).total_seconds()
@@ -526,7 +531,7 @@ def submit():
 def logout():
     return render_template("login.html")
 
-@app.route('/')
+@app.route('/index_log')
 def index_log():
     return render_template('index_login.html')
 
@@ -539,7 +544,7 @@ def submit_l():
     #     return render_template("welcome.html",name = username)
 
     validuser={
-        'admin': '123',
+        'faculty': '123',
         'preetiRai': 'preeti123',
         'sohit': 'Patel'
     }
@@ -549,7 +554,9 @@ def submit_l():
     else:
         return render_template("index_log_fail.html")
 
-    
+@app.route("/")
+def base_log():
+    return render_template("base.html")
 
 
 if __name__ == "__main__":

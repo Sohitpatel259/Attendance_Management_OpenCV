@@ -33,11 +33,11 @@
     </style>
 
   <div class="container-fluid">
-    <a class="navbar-brand" href="{{ url_for('index') }}"><h2 style="color: black;">Smart Attendance</h2></a>
+    <a class="navbar-brand" href="{{ url_for('index') }}"style = "text-decoration: none;"><h2 style="color: black;">Smart Attendance</h2></a>
     
     
     
-    <button style="color: black;  width: 80px;text-align: center;padding: 10px; margin:10px;background-color: rgba(255, 0, 0, 0.642);" ><a href="{{ url_for('index_log') }}" style="color: black;">Logout</a></button>
+    <button style="color: black;  width: 80px;text-align: center;padding: 10px; margin:10px;background-color: rgba(255, 0, 0, 0.642);" ><a href="{{ url_for('index_log') }}" style="color: black;text-decoration: none;">Logout</a></button>
   </div>
   
 </nav>
@@ -80,8 +80,8 @@
 
   <div class="footer">
     <div class="container text-center py-3">
-        <button style="background-color: #745ecaff;width: 208px;"><a class="text-light me-3" href="{{ url_for('upload_data_page') }}" >Upload Data</a></button>
-        <button style="background-color: #745ecaff;width: 208px;"><a class="text-light" href="{{ url_for('student_attendance') }}">Check Attendance</a></button>
+        <button style="background-color: #745ecaff;width: 208px;"><a class="text-light me-3" href="{{ url_for('upload_data_page') }}" style = "text-decoration: none;" >Upload Data</a></button>
+        <button style="background-color: #745ecaff;width: 208px;"><a class="text-light" href="{{ url_for('student_attendance') }}"style = "text-decoration: none;">Check Attendance</a></button>
       
       
     </div>

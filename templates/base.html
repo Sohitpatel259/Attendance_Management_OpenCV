@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance</title>
+</head>
+<body style="background-color: rgba(144, 197, 197, 0.737);">
+    
+    <div class="nev" style="margin: 10px;padding: 10px ;text-align: center;">
+        <nav>
+        <H1>Welcome To Smart Attendance Management System🫡</H1>
+    </nav>
+    </div>
+    <div class="img" style="justify-content:center;display: flex;padding: 1%;">
+        <img style="height: 300px;width:300px;" src= "{{ url_for('static', filename='img/base_login.jpg') }}" alt="img">
+    </div>
+    
+    
+    <div class="container"style="margin: 10px;padding: 3% ;text-align: center;">
+        <h2>Hey ,There 👋</h2>
+        <h3>Select Your Role 😇</h3>
+        <button style="width: 90px;"><a href="{{ url_for('index_log') }}" style="width: 90px;text-decoration: none;color: black; ">Faculty 👨‍🏫</a></button>
+        </div>
+</body>
+</html>
