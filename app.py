@@ -558,6 +558,29 @@ def submit_l():
 def base_log():
     return render_template("base.html")
 
+@app.route("/student_log")
+def student_log():
+    return render_template("student_log.html")
+
+@app.route("/submit_s",methods =["POST"])
+def submit_s():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    # if username =="sohitpatel359" and password=="password":
+    #     return render_template("welcome.html",name = username)
+
+    validuser={
+        'student': '123',
+        'sohit': 'Patel'
+    }
+    if username in validuser and password == validuser[username]:
+        return render_template("student_attendance.html",name = username)
+    
+    else:
+        return render_template("stu_log_fail.html")
+
+
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
